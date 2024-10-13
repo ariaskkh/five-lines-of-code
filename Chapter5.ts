@@ -27,11 +27,17 @@ class Air implements Tile {
 }
 
 class Stone implements Tile {
+  private falling: boolean;
+
+  constructor(falling: boolean) {
+    this.falling = falling;
+  }
+
   isAir() {
     return false;
   }
   isFallingStone() {
-    return false;
+    return this.falling;
   }
   isFallingBox() {
     return false;
@@ -65,11 +71,17 @@ class Stone implements Tile {
 }
 
 class FallingStone implements Tile {
+  private falling: boolean;
+
+  constructor(falling: boolean) {
+    this.falling = falling;
+  }
+
   isAir() {
     return false;
   }
   isFallingStone() {
-    return true;
+    return this.falling;
   }
   isFallingBox() {
     return false;
