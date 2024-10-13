@@ -25,3 +25,65 @@ class Air implements Tile {
     return false;
   }
 }
+
+class Stone implements Tile {
+  isAir() {
+    return false;
+  }
+  isFallingStone() {
+    return false;
+  }
+  isFallingBox() {
+    return false;
+  }
+  isLock1() {
+    return false;
+  }
+  isLock2() {
+    return false;
+  }
+  draw(g: CanvasRenderingContext2D, x: number, y: number) {}
+  moveVertical(dy: number) {}
+  isStony(): boolean {
+    return true;
+  }
+  isBoxy(): boolean {
+    return false;
+  }
+  moveHorizontal(dx: number) {
+    if (
+      map[playery][playerx + dx + dx].isAir() &&
+      !map[playery + 1][player + dx].isAir()
+    ) {
+      map[playery][playerx + dx + dx] = this;
+      moveToTile(playerx + dx, playery);
+    }
+  }
+}
+
+class FallingStone implements Tile {
+  isAir() {
+    return false;
+  }
+  isFallingStone() {
+    return true;
+  }
+  isFallingBox() {
+    return false;
+  }
+  isLock1() {
+    return false;
+  }
+  isLock2() {
+    return false;
+  }
+  draw(g: CanvasRenderingContext2D, x: number, y: number) {}
+  moveVertical(dy: number) {}
+  isStony(): boolean {
+    return true;
+  }
+  isBoxy(): boolean {
+    return false;
+  }
+  moveHorizontal(dx: number) {}
+}
