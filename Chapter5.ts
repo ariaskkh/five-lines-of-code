@@ -5,16 +5,13 @@ function updateTile(x: number, y: number) {
   } else if (map[y][x].isBoxy() && map[y + 1][x].isAir()) {
     map[y + 1][x] = new Box(new Falling());
     map[y][x] = new Air();
-  } else if (map[y][x].isFallingStone()) {
-    map[y][x] = new Stone(new Resting());
-  } else if (map[y][x].isFallingBox()) {
-    map[y][x] = new Box(new Resting());
+  } else if (map[y][x].isFalling()) {
+    map[y][x].rest();
   }
 }
 
 interface Tile {
-  isFallingStone(): boolean;
-  isFallingBox(): boolean;
+  isFalling(): boolean;
   isAir(): boolean;
   isStony(): boolean;
   isBoxy(): boolean;
@@ -50,10 +47,7 @@ class Resting implements FallingState {
 }
 
 class Air implements Tile {
-  isFallingStone(): boolean {
-    return false;
-  }
-  isFallingBox(): boolean {
+  isFalling(): boolean {
     return false;
   }
   isAir(): boolean {
@@ -71,13 +65,10 @@ class Air implements Tile {
 
 class Stone implements Tile {
   constructor(private falling: FallingState) {}
-  isAir() {
-    return false;
-  }
-  isFallingStone() {
+  isFalling(): boolean {
     return this.falling.isFalling();
   }
-  isFallingBox() {
+  isAir() {
     return false;
   }
   isLock1() {
@@ -108,10 +99,7 @@ class Stone implements Tile {
 
 class Box implements Tile {
   constructor(private falling: FallingState) {}
-  isFallingStone(): boolean {
-    return false;
-  }
-  isFallingBox(): boolean {
+  isFalling(): boolean {
     return this.falling.isFalling();
   }
   isAir(): boolean {
@@ -129,10 +117,7 @@ class Box implements Tile {
 }
 
 class Flux implements Tile {
-  isFallingStone(): boolean {
-    return false;
-  }
-  isFallingBox(): boolean {
+  isFalling(): boolean {
     return false;
   }
   isAir(): boolean {
