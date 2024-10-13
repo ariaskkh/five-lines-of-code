@@ -6,13 +6,16 @@ function updateTile(x: number, y: number) {
     map[y + 1][x] = new Box(new Falling());
     map[y][x] = new Air();
   } else if (map[y][x].isFallingStone()) {
-    map[y][x];
+    map[y][x] = new Stone(new Resting());
   } else if (map[y][x].isFallingBox()) {
     map[y][x] = new Box(new Resting());
   }
 }
 
 interface Tile {
+  isFallingStone(): boolean;
+  isFallingBox(): boolean;
+  isAir(): boolean;
   isStony(): boolean;
   isBoxy(): boolean;
   drop(): void;
@@ -47,6 +50,15 @@ class Resting implements FallingState {
 }
 
 class Air implements Tile {
+  isFallingStone(): boolean {
+    return false;
+  }
+  isFallingBox(): boolean {
+    return false;
+  }
+  isAir(): boolean {
+    return true;
+  }
   drop(): void {}
   rest(): void {}
   isStony(): boolean {
@@ -96,6 +108,15 @@ class Stone implements Tile {
 
 class Box implements Tile {
   constructor(private falling: FallingState) {}
+  isFallingStone(): boolean {
+    return false;
+  }
+  isFallingBox(): boolean {
+    return this.falling.isFalling();
+  }
+  isAir(): boolean {
+    return false;
+  }
   isStony(): boolean {
     return false;
   }
@@ -108,6 +129,15 @@ class Box implements Tile {
 }
 
 class Flux implements Tile {
+  isFallingStone(): boolean {
+    return false;
+  }
+  isFallingBox(): boolean {
+    return false;
+  }
+  isAir(): boolean {
+    return true;
+  }
   isStony(): boolean {
     return false;
   }
@@ -118,7 +148,28 @@ class Flux implements Tile {
   rest(): void {}
 }
 
-var map: Tile = new Stone(new Resting()); // 컴파일 에러 제거를 위한 임시 코드
+var map: Tile[][] = [
+  [
+    new Stone(new Resting()),
+    new Stone(new Resting()),
+    new Stone(new Resting()),
+  ],
+  [
+    new Stone(new Resting()),
+    new Stone(new Resting()),
+    new Stone(new Resting()),
+  ],
+  [
+    new Stone(new Resting()),
+    new Stone(new Resting()),
+    new Stone(new Resting()),
+  ],
+  [
+    new Stone(new Resting()),
+    new Stone(new Resting()),
+    new Stone(new Resting()),
+  ],
+]; // 컴파일 에러 제거를 위한 임시 코드
 var playerx = 1;
 var playery = 2;
 
