@@ -3,12 +3,12 @@ function updateTile(x: number, y: number) {
     map[y + 1][x] = new Stone(new Falling());
     map[y][x] = new Air();
   } else if (map[y][x].isBoxy() && map[y + 1][x].isAir()) {
-    map[y + 1][x] = new Fallingbox();
+    map[y + 1][x] = new Box(new Falling());
     map[y][x] = new Air();
   } else if (map[y][x].isFallingStone()) {
     map[y][x] = new Stone(new Resting());
   } else if (map[y][x].isFallingBox()) {
-    map[y][x] = new isBoxedPrimitive();
+    map[y][x] = new Box(new Resting());
   }
 }
 
@@ -81,5 +81,15 @@ class Stone implements Tile {
   }
   moveHorizontal(dx: number) {
     this.falling.moveHorizontal(this, dx);
+  }
+}
+
+class Box implements Tile {
+  constructor(private falling: FallingState) {}
+  isStony(): boolean {
+    return false;
+  }
+  isBoxy(): boolean {
+    return true;
   }
 }
