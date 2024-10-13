@@ -6,7 +6,7 @@ function updateTile(x: number, y: number) {
     map[y + 1][x] = new Box(new Falling());
     map[y][x] = new Air();
   } else if (map[y][x].isFallingStone()) {
-    map[y][x] = new Stone(new Resting());
+    map[y][x];
   } else if (map[y][x].isFallingBox()) {
     map[y][x] = new Box(new Resting());
   }
@@ -15,6 +15,8 @@ function updateTile(x: number, y: number) {
 interface Tile {
   isStony(): boolean;
   isBoxy(): boolean;
+  drop(): void;
+  rest(): void;
 }
 
 interface FallingState {
@@ -29,7 +31,7 @@ class Falling implements FallingState {
   moveHorizontal(tile: Tile, dx: number): void {
     if (
       map[playery][playerx + dx + dx].isAir() &&
-      !map[playery + 1][player + dx].isAir()
+      !map[playery + 1][playerx + dx].isAir()
     ) {
       map[playery][playerx + dx + dx] = tile;
       moveToTile(playerx + dx, playery);
@@ -45,6 +47,8 @@ class Resting implements FallingState {
 }
 
 class Air implements Tile {
+  drop(): void {}
+  rest(): void {}
   isStony(): boolean {
     return false;
   }
@@ -55,7 +59,6 @@ class Air implements Tile {
 
 class Stone implements Tile {
   constructor(private falling: FallingState) {}
-
   isAir() {
     return false;
   }
@@ -82,6 +85,13 @@ class Stone implements Tile {
   moveHorizontal(dx: number) {
     this.falling.moveHorizontal(this, dx);
   }
+
+  drop(): void {
+    this.falling = new Falling();
+  }
+  rest(): void {
+    this.falling = new Resting();
+  }
 }
 
 class Box implements Tile {
@@ -92,4 +102,26 @@ class Box implements Tile {
   isBoxy(): boolean {
     return true;
   }
+
+  drop(): void {}
+  rest(): void {}
+}
+
+class Flux implements Tile {
+  isStony(): boolean {
+    return false;
+  }
+  isBoxy(): boolean {
+    return false;
+  }
+  drop(): void {}
+  rest(): void {}
+}
+
+var map: Tile = new Stone(new Resting()); // 컴파일 에러 제거를 위한 임시 코드
+var playerx = 1;
+var playery = 2;
+
+function moveToTile(arg0: number, playery: number) {
+  throw new Error("Function not implemented.");
 }
