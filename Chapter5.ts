@@ -51,12 +51,15 @@ class Stone implements Tile {
     return false;
   }
   moveHorizontal(dx: number) {
-    if (
-      map[playery][playerx + dx + dx].isAir() &&
-      !map[playery + 1][player + dx].isAir()
-    ) {
-      map[playery][playerx + dx + dx] = this;
-      moveToTile(playerx + dx, playery);
+    if (this.isFallingStone() === false) {
+      if (
+        map[playery][playerx + dx + dx].isAir() &&
+        !map[playery + 1][player + dx].isAir()
+      ) {
+        map[playery][playerx + dx + dx] = this;
+        moveToTile(playerx + dx, playery);
+      }
+    } else if (this.isFallingStone() === true) {
     }
   }
 }
@@ -85,5 +88,17 @@ class FallingStone implements Tile {
   isBoxy(): boolean {
     return false;
   }
-  moveHorizontal(dx: number) {}
+  moveHorizontal(dx: number) {
+    if (this.isFallingStone() === false) {
+      if (
+        map[playery][playerx + dx + dx].isAir() &&
+        !map[playery + 1][player + dx].isAir()
+      ) {
+        map[playery][playerx + dx + dx] = this;
+        moveToTile(playerx + dx, playery);
+      }
+    }
+    if (this.isFallingStone() === true) {
+    }
+  }
 }
