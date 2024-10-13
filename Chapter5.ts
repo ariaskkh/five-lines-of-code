@@ -20,6 +20,7 @@ interface Tile {
 interface FallingState {
   isFalling(): boolean;
   isResting(): boolean;
+  moveHorizontal(tile: Tile, dx: number): void;
 }
 
 class Falling implements FallingState {
@@ -28,6 +29,15 @@ class Falling implements FallingState {
   }
   isResting(): boolean {
     return false;
+  }
+  moveHorizontal(tile: Tile, dx: number): void {
+    if (
+      map[playery][playerx + dx + dx].isAir() &&
+      !map[playery + 1][player + dx].isAir()
+    ) {
+      map[playery][playerx + dx + dx] = tile;
+      moveToTile(playerx + dx, playery);
+    }
   }
 }
 
@@ -38,6 +48,8 @@ class Resting implements FallingState {
   isResting(): boolean {
     return true;
   }
+
+  moveHorizontal(tile: Tile, dx: number) {}
 }
 
 class Air implements Tile {
@@ -76,15 +88,6 @@ class Stone implements Tile {
     return false;
   }
   moveHorizontal(dx: number) {
-    if (this.isFallingStone() === false) {
-      if (
-        map[playery][playerx + dx + dx].isAir() &&
-        !map[playery + 1][player + dx].isAir()
-      ) {
-        map[playery][playerx + dx + dx] = this;
-        moveToTile(playerx + dx, playery);
-      }
-    } else if (this.isFallingStone() === true) {
-    }
+    this.falling.moveHorizontal(this, dx);
   }
 }
