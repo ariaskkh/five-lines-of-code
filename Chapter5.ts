@@ -1,21 +1,13 @@
 function updateTile(x: number, y: number) {
-  if ((map[y][x].isStony() || map[y][x].isBoxy()) && map[y + 1][x].isAir()) {
-    map[y][x].drop();
-    map[y + 1][x] = map[y][x];
-    map[y][x] = new Air();
-  } else if (map[y][x].isFalling()) {
-    map[y][x].rest();
-  }
+  map[y][x].update(y, x);
 }
 
 interface Tile {
-  isFalling(): boolean;
   isAir(): boolean;
   isStony(): boolean;
   isBoxy(): boolean;
-  drop(): void;
-  rest(): void;
   canFall(): boolean;
+  update(x: number, y: number): void;
 }
 
 interface FallingState {
@@ -46,13 +38,9 @@ class Resting implements FallingState {
 }
 
 class Air implements Tile {
-  isFalling(): boolean {
-    return false;
-  }
   isAir(): boolean {
     return true;
   }
-  drop(): void {}
   rest(): void {}
   isStony(): boolean {
     return false;
@@ -63,13 +51,11 @@ class Air implements Tile {
   canFall(): boolean {
     return false;
   }
+  update(x: number, y: number): void {}
 }
 
 class Stone implements Tile {
   constructor(private falling: FallingState) {}
-  isFalling(): boolean {
-    return this.falling.isFalling();
-  }
   isAir() {
     return false;
   }
@@ -100,13 +86,19 @@ class Stone implements Tile {
   canFall(): boolean {
     return true;
   }
+  update(x: number, y: number): void {
+    if (map[y + 1][x].isAir()) {
+      this.falling = new Falling();
+      map[y + 1][x] = this;
+      map[y][x] = new Air();
+    } else if (this.falling.isFalling()) {
+      this.falling = new Resting();
+    }
+  }
 }
 
 class Box implements Tile {
   constructor(private falling: FallingState) {}
-  isFalling(): boolean {
-    return this.falling.isFalling();
-  }
   isAir(): boolean {
     return false;
   }
@@ -118,16 +110,21 @@ class Box implements Tile {
   }
 
   drop(): void {}
-  rest(): void {}
   canFall(): boolean {
     return true;
+  }
+  update(x: number, y: number): void {
+    if (map[y + 1][x].isAir()) {
+      this.falling = new Falling();
+      map[y + 1][x] = this;
+      map[y][x] = new Air();
+    } else if (this.falling.isFalling()) {
+      this.falling = new Resting();
+    }
   }
 }
 
 class Flux implements Tile {
-  isFalling(): boolean {
-    return false;
-  }
   isAir(): boolean {
     return true;
   }
@@ -137,11 +134,10 @@ class Flux implements Tile {
   isBoxy(): boolean {
     return false;
   }
-  drop(): void {}
-  rest(): void {}
   canFall(): boolean {
     return false;
   }
+  update(x: number, y: number): void {}
 }
 
 var map: Tile[][] = [
