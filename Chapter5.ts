@@ -1,8 +1,5 @@
 function updateTile(x: number, y: number) {
-  if (
-    (map[y][x].isStony() && map[y + 1][x].isAir()) ||
-    (map[y][x].isBoxy() && map[y + 1][x].isAir())
-  ) {
+  if ((map[y][x].isStony() || map[y][x].isBoxy()) && map[y + 1][x].isAir()) {
     map[y][x].drop();
     map[y + 1][x] = map[y][x];
     map[y][x] = new Air();
@@ -18,6 +15,7 @@ interface Tile {
   isBoxy(): boolean;
   drop(): void;
   rest(): void;
+  canFall(): boolean;
 }
 
 interface FallingState {
@@ -62,6 +60,9 @@ class Air implements Tile {
   isBoxy(): boolean {
     return false;
   }
+  canFall(): boolean {
+    return false;
+  }
 }
 
 class Stone implements Tile {
@@ -96,6 +97,9 @@ class Stone implements Tile {
   rest(): void {
     this.falling = new Resting();
   }
+  canFall(): boolean {
+    return true;
+  }
 }
 
 class Box implements Tile {
@@ -115,6 +119,9 @@ class Box implements Tile {
 
   drop(): void {}
   rest(): void {}
+  canFall(): boolean {
+    return true;
+  }
 }
 
 class Flux implements Tile {
@@ -132,6 +139,9 @@ class Flux implements Tile {
   }
   drop(): void {}
   rest(): void {}
+  canFall(): boolean {
+    return false;
+  }
 }
 
 var map: Tile[][] = [
