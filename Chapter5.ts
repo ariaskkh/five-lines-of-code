@@ -55,7 +55,12 @@ class Air implements Tile {
 }
 
 class Stone implements Tile {
-  constructor(private falling: FallingState) {}
+  private fallStrategy: FallStrategy;
+
+  constructor(falling: FallingState) {
+    this.fallStrategy = new FallStrategy(falling);
+  }
+
   isAir() {
     return false;
   }
@@ -74,31 +79,30 @@ class Stone implements Tile {
     return false;
   }
   moveHorizontal(dx: number) {
-    this.falling.moveHorizontal(this, dx);
+    this.fallStrategy.getFalling().moveHorizontal(this, dx);
   }
 
   drop(): void {
-    this.falling = new Falling();
+    // this.falling = new Falling();
   }
   rest(): void {
-    this.falling = new Resting();
+    // this.falling = new Resting();
   }
   canFall(): boolean {
     return true;
   }
   update(x: number, y: number): void {
-    if (map[y + 1][x].isAir()) {
-      this.falling = new Falling();
-      map[y + 1][x] = this;
-      map[y][x] = new Air();
-    } else if (this.falling.isFalling()) {
-      this.falling = new Resting();
-    }
+    this.fallStrategy.update(this, x, y);
   }
 }
 
 class Box implements Tile {
-  constructor(private falling: FallingState) {}
+  private fallStrategy: FallStrategy;
+
+  constructor(falling: FallingState) {
+    this.fallStrategy = new FallStrategy(falling);
+  }
+
   isAir(): boolean {
     return false;
   }
@@ -114,13 +118,7 @@ class Box implements Tile {
     return true;
   }
   update(x: number, y: number): void {
-    if (map[y + 1][x].isAir()) {
-      this.falling = new Falling();
-      map[y + 1][x] = this;
-      map[y][x] = new Air();
-    } else if (this.falling.isFalling()) {
-      this.falling = new Resting();
-    }
+    this.fallStrategy.update(this, x, y);
   }
 }
 
@@ -167,4 +165,20 @@ var playery = 2;
 
 function moveToTile(arg0: number, playery: number) {
   throw new Error("Function not implemented.");
+}
+
+class FallStrategy {
+  constructor(private falling: FallingState) {}
+  getFalling() {
+    return this.falling;
+  }
+  update(tile: Tile, x: number, y: number) {
+    if (map[y + 1][x].isAir()) {
+      this.falling = new Falling();
+      map[y + 1][x] = tile;
+      map[y][x] = new Air();
+    } else if (this.falling.isFalling()) {
+      this.falling = new Resting();
+    }
+  }
 }
