@@ -3,9 +3,9 @@ class Website {
   getUrl() {
     return this.url;
   }
-  generateLink(name: string, id: string) {
-    return this.url + name + id;
-  }
+  //   generateLink(name: string, id: string) {
+  //     return this.url + name + id;
+  //   }
 }
 
 class User {
@@ -13,9 +13,9 @@ class User {
   getUsername() {
     return this.username;
   }
-  generateLink(website: Website, id: string) {
-    website.generateLink(this.username, id);
-  }
+  //   generateLink(website: Website, id: string) {
+  //     website.generateLink(this.username, id);
+  //   }
 }
 
 class BlogPost {
@@ -23,20 +23,19 @@ class BlogPost {
   getId() {
     return this.id;
   }
-  getAuthor() {
-    return this.author;
+  getAuthorName() {
+    return this.author.getUsername();
   }
 
-  generateLink(website: Website) {
-    return this.author.generateLink(website, this.id);
-  }
+  //   generateLink(website: Website) {
+  //     return this.author.generateLink(website, this.id);
+  //   }
 }
 
 function generatePostLink(website: Website, post: BlogPost) {
-  //   let url = website.getUrl();
-  //   let user = post.getAuthor();
-  //   let name = user.getUsername();
-  //   let postId = post.getId();
-  //   return url + name + postId;
-  return post.generateLink(website);
+  let url = website.getUrl();
+  let name = post.getAuthorName();
+  let postId = post.getId();
+  return url + name + postId;
+  //   return post.generateLink(website);
 }
