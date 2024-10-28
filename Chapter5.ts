@@ -8,11 +8,13 @@ interface Tile {
   isBoxy(): boolean;
   canFall(): boolean;
   update(x: number, y: number): void;
+  getBlockOnTopState(): FallingState;
 }
 
 interface FallingState {
   isFalling(): boolean;
   moveHorizontal(tile: Tile, dx: number): void;
+  drop(tile: Tile, x: number, y: number): void;
 }
 
 class Falling implements FallingState {
@@ -28,6 +30,10 @@ class Falling implements FallingState {
       moveToTile(playerx + dx, playery);
     }
   }
+  drop(tile: Tile, x: number, y: number) {
+    map[y + 1][x] = tile;
+    map[y][x] = new Air();
+  }
 }
 
 class Resting implements FallingState {
@@ -35,6 +41,7 @@ class Resting implements FallingState {
     return false;
   }
   moveHorizontal(tile: Tile, dx: number) {}
+  drop(tile: Tile, x: number, y: number) {}
 }
 
 class Air implements Tile {
@@ -52,6 +59,9 @@ class Air implements Tile {
     return false;
   }
   update(x: number, y: number): void {}
+  getBlockOnTopState() {
+    return new Falling();
+  }
 }
 
 class Stone implements Tile {
@@ -94,6 +104,10 @@ class Stone implements Tile {
   update(x: number, y: number): void {
     this.fallStrategy.update(this, x, y);
   }
+
+  getBlockOnTopState() {
+    return new Resting();
+  }
 }
 
 class Box implements Tile {
@@ -124,6 +138,10 @@ class Box implements Tile {
   moveHorizontal(dx: number) {
     this.fallStrategy.moveHorizontal(this, dx);
   }
+
+  getBlockOnTopState() {
+    return new Resting();
+  }
 }
 
 class Flux implements Tile {
@@ -140,6 +158,10 @@ class Flux implements Tile {
     return false;
   }
   update(x: number, y: number): void {}
+
+  getBlockOnTopState() {
+    return new Falling();
+  }
 }
 
 var map: Tile[][] = [
@@ -174,15 +196,9 @@ function moveToTile(arg0: number, playery: number) {
 class FallStrategy {
   constructor(private falling: FallingState) {}
   update(tile: Tile, x: number, y: number) {
-    this.falling = map[y + 1][x].isAir() ? new Falling() : new Resting();
-    this.drop(tile, x, y);
-  }
-
-  private drop(tile: Tile, x: number, y: number) {
-    if (map[y + 1][x].isAir()) {
-      map[y + 1][x] = tile;
-      map[y][x] = new Air();
-    }
+    // this.falling = map[y + 1][x].isAir() ? new Falling() : new Resting();
+    this.falling = map[y + 1][x].getBlockOnTopState();
+    this.falling.drop(tile, x, y);
   }
 
   moveHorizontal(tile: Tile, dx: number) {
